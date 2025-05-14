@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Test POST Request</title>
+</head>
+<body>
+  <h1>Wyślij głos</h1>
+  <button onclick="sendVote()">Głosuj</button>
+
+  <pre id="output"></pre>
+
+  <script>
+    async function sendVote() {
+      const url = "https://www.wroclaw.pl/api/quiz/api/polls/1898/option/6833";
+
+      const headers = {
+        "Accept": "application/json, text/plain, */*",
+        "Content-Length": "0",
+        "Origin": "https://www.wroclaw.pl",
+        "Referer": "https://www.wroclaw.pl/dla-mieszkanca/tramwaj-przez-klecine-na-oporow-podpisali-umowe-z-projektantem-warianty?refresh=1743855031631",
+        "User-Agent": navigator.userAgent
+      };
+
+      async function send() {
+         try {
+           const response = await fetch(url, {
+             method: "POST",
+             headers: headers
+           });
+
+           const data = await response.json();
+           document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+         } catch (err) {
+           document.getElementById("output").textContent = "Błąd: " + err;
+         }
+         setTimeout(() => send(), 2000);
+      };
+
+      send();      
+
+    }
+  </script>
+</body>
+</html>
