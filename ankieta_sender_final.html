@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Automatyczne odpowiedzi</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    textarea { width: 100%; height: 60px; margin-bottom: 10px; }
+    button { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <h2>Generator odpowiedzi do ankiety</h2>
+
+  <div id="fields"></div>
+  <button onclick="addField()">+</button>
+
+  <h3>Liczba requestów</h3>
+  <input type="number" id="count" value="1">
+
+  <h3>Odstęp między requestami (sekundy)</h3>
+  <input type="number" id="delay" value="2">
+
+  <br><br>
+  <button onclick="sendRequests()">Wyślij</button>
+
+  <pre id="log"></pre>
+
+  <script>
+    const fieldsDiv = document.getElementById("fields");
+    const logDiv = document.getElementById("log");
+
+    function addField() {
+      const textarea = document.createElement("textarea");
+      fieldsDiv.appendChild(textarea);
+    }
+
+    function getValues() {
+      return Array.from(fieldsDiv.querySelectorAll("textarea")).map(t => t.value).filter(v => v.trim() !== "");
+    }
+
+    const mapQ2 = { o2: "19-25 lat", o3: "26-35 lat", o4: "36-59 lat", o5: "60-74 lat" };
+    const mapQ3 = { o1: "kobieta", o2: "mężczyzna" };
+    const mapQ4 = { o13: "Klecina" };
+
+    async function sendRequests() {
+      const values = getValues();
+      if (values.length === 0) {
+        alert("Dodaj co najmniej jedną odpowiedź!");
+        return;
+      }
+
+      const count = parseInt(document.getElementById("count").value, 10) || 1;
+      const delay = (parseInt(document.getElementById("delay").value, 10) || 1) * 1000;
+
+      for (let i = 0; i < count; i++) {
+        const answers = await sendSingle(values, i+1, count);
+        logDiv.textContent += `Wysłano request ${i+1} / ${count}\n`;
+        logDiv.textContent += `  Odpowiedź 1: ${answers.a1}\n  Odpowiedź 2: ${mapQ2[answers.a2]}\n  Odpowiedź 3: ${mapQ3[answers.a3]}\n  Odpowiedź 4: ${mapQ4["o13"]}\n\n`;
+        console.log(`Request ${i+1}/${count}:`, {
+          a1: answers.a1,
+          a2: mapQ2[answers.a2],
+          a3: mapQ3[answers.a3],
+          a4: mapQ4["o13"]
+        });
+        if (i < count - 1) await new Promise(r => setTimeout(r, delay));
+      }
+    }
+
+    async function sendSingle(values, index, total) {
+      const answer1 = values[Math.floor(Math.random() * values.length)];
+      const answer2Options = ["o2", "o3", "o4", "o5"];
+      const answer3Options = ["o1", "o2"];
+      const answer2 = answer2Options[Math.floor(Math.random() * answer2Options.length)];
+      const answer3 = answer3Options[Math.floor(Math.random() * answer3Options.length)];
+
+      const body = new URLSearchParams({
+        "iframe": "1",
+        "iframe_session_id": "BB8Tl%2FgiYiMykNNyivzf0w%3D%3D%24WlZkbCtlaEVwSTgwMjI2b2FXa1F0cFozSDlQUS9XQ2RlWUF2Y09YTk9aMD0%3D",
+        "lang": "pl",
+        "id": "1545666",
+        "id_strona": "6954837",
+        "progress": "0",
+        "requiredAnswers": "Uzupełnij brakujące odpowiedzi lub odpowiedz zgodnie z instrukcją",
+        "odp[20316306][typ]": "2",
+        "odp[20316306][oz1]": answer1,
+        "odp[20316309][typ]": "13",
+        "odp[20316309][radio]": answer2,
+        "odp[20316312][typ]": "13",
+        "odp[20316312][radio]": answer3,
+        "odp[20316315][typ]": "13",
+        "odp[20316315][radio]": "o13",
+        "finish": "Wyslij"
+      });
+
+      try {
+        await fetch("https://www.webankieta.pl/ankieta/wypelnij", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: body.toString()
+        });
+      } catch (e) {
+        logDiv.textContent += "Błąd: " + e + "\n";
+      }
+
+      return { a1: answer1, a2: answer2, a3: answer3 };
+    }
+  </script>
+</body>
+</html>
