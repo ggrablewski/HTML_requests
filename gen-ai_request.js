@@ -1,5 +1,18 @@
 // Simple JS script sending a POST request
 
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load credentials
+const credentialsPath = path.join(__dirname, '.credentials');
+const credentialsContent = fs.readFileSync(credentialsPath, 'utf8');
+const credentials = JSON.parse(credentialsContent);
+
 const url = "https://api.generative.engine.capgemini.com/v2/llm/invoke";
 
 async function callApi() {
@@ -8,7 +21,7 @@ async function callApi() {
         modelInterface: "langchain",
         data: {
             mode: "chain",
-            text: "Describe, how do AI algorithms exactly work? Explain concepts like neural networks, gradient descent, embeddings.",
+            text: "What are Banach spaces in practice used for?",
             files: [],
             modelName: "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
             provider: "bedrock",
@@ -28,7 +41,7 @@ async function callApi() {
             headers: {
                 "accept": "application/json",
                 "Content-Type": "application/json",
-                "x-api-key": "YOUR-API-KEY"
+                "x-api-key": credentials.genai.token
             },
             body: JSON.stringify(payload)
         });
