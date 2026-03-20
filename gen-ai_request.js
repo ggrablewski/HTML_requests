@@ -60,13 +60,13 @@ callApi();
 // models:
 // mistral.mistral-7b-instruct-v0:2
 // us.anthropic.claude-sonnet-4-5-20250929-v1:0
-// anthropic.claude-sonnet-4-6
+// NO // anthropic.claude-sonnet-4-6
 // gemini-2.5-flash
-// gemini-2.5-pro
+// NO // gemini-2.5-pro
 // openai.gpt-5.2
 // openai.gpt-5.2-chat
 // openai.o3
-// grok-4
-// amazon.nova-pro-v1:0
+// NO // grok-4
+// NO // amazon.nova-pro-v1:0
 // amazon.nova-2-lite-v1:0
 
