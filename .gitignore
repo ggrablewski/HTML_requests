@@ -1,2 +1,2 @@
 # Credentials - NEVER commit sensitive data!
-.credentials
+src/main/js/.credentials

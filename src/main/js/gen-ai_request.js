@@ -21,11 +21,11 @@ async function callApi() {
         modelInterface: "langchain",
         data: {
             mode: "chain",
-            text: "What are Banach spaces in practice used for?",
+            text: "What is a cloud?",
             files: [],
             modelName: "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
             provider: "bedrock",
-            systemPrompt: "You are a mathematician, a scientist.",
+            systemPrompt: "You are an assistant.",
             modelKwargs: {
                 maxTokens: 4096,
                 temperature: 0.4,
